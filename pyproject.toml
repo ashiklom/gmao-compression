@@ -30,4 +30,4 @@ xbitinfo = ">=0.0.4.dev1,<0.0.5"
 zstandard = ">=0.23.0,<0.24"
 
 [tool.pixi.activation]
-env = { CONDA_JL_CONDA_EXE="$(which conda)" }
+scripts = ["pixi_env.sh"]
