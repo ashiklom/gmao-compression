@@ -1,6 +1,23 @@
 # GMAO compression utilities
 
-## Setup on NCCS Discover
+## Setup
+
+### Using pixi (recommended)
+
+First, install pixi (if you haven't already) per the default installation instructions here: https://pixi.sh/latest/installation/.
+Note that this is a user-level install (i.e., installs to your home directory); you don't need any kind of admin privileges.
+You only need to do this once per system.
+Then, log out and log back in (or `source ~/.bashrc`).
+
+Once pixi is installed, navigate to the project directory and run:
+
+```sh
+pixi run pip install .
+```
+
+This will first install all project dependencies and then install the package itself.
+
+### Using mamba (only on NCCS Discover)
 
 Load python environment.
 
@@ -55,6 +72,17 @@ compress --help
 ```
 
 ## Usage
+
+### Using pixi (recommended)
+
+```sh
+pixi run compress <input-file> <compression-level> <output-file>
+pixi run compress --help
+pixi run decompress --help
+pixi run verify --help
+```
+
+### Using mamba 
 
 Activate the environment.
 

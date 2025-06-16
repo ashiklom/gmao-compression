@@ -18,7 +18,7 @@ def xbitinfo_round(file_path, inflevel):
     coord_data = {var: ds[var] for var in coord_vars if var in ds}
     ds_round = ds.drop_vars(coord_vars)
 
-    bitinfo = xb.get_bitinformation(ds[["var1", "var2"]], dim="lon")
+    bitinfo = xb.get_bitinformation(ds, dim="lon")
     keepbits = xb.get_keepbits(bitinfo, inflevel=inflevel)
 
     neg_vars = [v for v, kb in keepbits.items() if kb.item() < 0]

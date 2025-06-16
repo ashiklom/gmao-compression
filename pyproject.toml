@@ -18,7 +18,16 @@ verify = "gmao_compression.verify:main"
 
 [tool.pixi.workspace]
 channels = ["conda-forge"]
-platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+platforms = ["linux-64"]
 
 [tool.pixi.dependencies]
-h5netcdf = "*"
+conda = "*"
+pip = "*"
+python = "*"
+netcdf4 = ">=1.6.5,<2"
+xarray = ">=2025.6.1,<2026"
+xbitinfo = ">=0.0.4.dev1,<0.0.5"
+zstandard = ">=0.23.0,<0.24"
+
+[tool.pixi.activation]
+env = { CONDA_JL_CONDA_EXE="$(which conda)" }
