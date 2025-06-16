@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
-import os
-import tempfile
 
 import xarray as xr
 import xbitinfo as xb
-import zstandard as zstd
 
 
-def xbitinfo_round(file_path, inflevel):
-    ds = xr.open_dataset(file_path)
+def xbitinfo_round(input_file, inflevel, output_file, deflate_level=2):
+    ds = xr.open_dataset(input_file)
     coord_vars = list(ds.coords)
 
     if "TAITIME" in list(ds.data_vars):
@@ -38,19 +35,15 @@ def xbitinfo_round(file_path, inflevel):
     for v, arr in {**coord_data, **neg_data}.items():
         ds_bitrounded[v] = arr
 
-    with tempfile.NamedTemporaryFile(suffix=".nc4", delete=False) as tmp:
-        temp_path = tmp.name
-
     ds_bitrounded.to_netcdf(
-        path=temp_path, mode="w", format="NETCDF4", engine="netcdf4"
+        path=output_file,
+        mode="w",
+        format="NETCDF4",
+        engine="netcdf4",
+        encoding={"zlib": True, "compression": deflate_level},
     )
 
-    with open(temp_path, "rb") as f:
-        data_bytes = f.read()
-
-    os.remove(temp_path)
-
-    return data_bytes
+    return output_file
 
 
 def main():
@@ -62,15 +55,16 @@ def main():
         "compression_level", type=float, help="Rounding level for xbitinfo rounding"
     )
     parser.add_argument("output_path", help="Path to write the compressed file")
+    parser.add_argument("deflate_level", help="DEFLATE compression level", default=2)
     args = parser.parse_args()
 
-    rounded_data_bytes = xbitinfo_round(args.file_path, args.compression_level)
+    xbitinfo_round(
+        args.file_path,
+        args.compression_level,
+        args.output_path,
+        deflate_level=args.deflate_level,
+    )
 
-    cctx = zstd.ZstdCompressor(level=22)
-    compressed_data = cctx.compress(rounded_data_bytes)
-
-    with open(args.output_path, "wb") as f:
-        f.write(compressed_data)
     print(f"Compressed file written to: {args.output_path}")
 
 
