@@ -5,7 +5,7 @@ description = "GMAO compression utilities"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "h5netcdf>=1.6.1",
+    "netcdf4>=1.6.5",
     "xarray>=2025.4.0",
     "xbitinfo>=0.0.3",
     "zstandard>=0.23.0",
