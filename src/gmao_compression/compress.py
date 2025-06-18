@@ -20,7 +20,7 @@ def xbitinfo_round(input_file, inflevel, output_file, deflate_level=2):
 
     bitinfo = xb.get_bitinformation(ds, dim=kb_dims)
     keepbits = xb.get_keepbits(bitinfo, inflevel=inflevel)
-    kbmax = keepbits.max(dim='dim')
+    kbmax = keepbits.max(dim="dim")
 
     # Skip variables with negative keepbits
     neg_data = {}
@@ -46,10 +46,7 @@ def xbitinfo_round(input_file, inflevel, output_file, deflate_level=2):
 
     print(f"Writing result to {output_file}")
     ds_bitrounded.to_netcdf(
-        path=output_file,
-        mode="w",
-        format="NETCDF4",
-        engine="netcdf4"
+        path=output_file, mode="w", format="NETCDF4", engine="netcdf4"
     )
 
     return output_file
