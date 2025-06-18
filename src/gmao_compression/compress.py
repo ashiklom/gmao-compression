@@ -15,32 +15,41 @@ def xbitinfo_round(input_file, inflevel, output_file, deflate_level=2):
     coord_data = {var: ds[var] for var in coord_vars if var in ds}
     ds_round = ds.drop_vars(coord_vars)
 
-    bitinfo = xb.get_bitinformation(ds, dim="lon")
+    # Find all dims with length at least 5
+    kb_dims = [dim for dim, size in ds.sizes.items() if size >= 5]
+
+    bitinfo = xb.get_bitinformation(ds, dim=kb_dims)
     keepbits = xb.get_keepbits(bitinfo, inflevel=inflevel)
+    kbmax = keepbits.max(dim='dim')
 
-    neg_vars = [v for v, kb in keepbits.items() if kb.item() < 0]
-    if neg_vars:
-        print(f"Skipping variables with negative keepbits: {neg_vars}")
-        neg_data = {v: ds[v] for v in neg_vars}
-        ds_round = ds_round.drop_vars(neg_vars)
-        # remove them from the keepbits dict so xr_bitround won’t see them
-        keepbits = {v: kb for v, kb in keepbits.items() if v not in neg_vars}
-    else:
-        neg_data = {}
+    # Skip variables with negative keepbits
+    neg_data = {}
+    for v, kb in kbmax.items():
+        if kb.item() < 0:
+            neg_data[v] = ds[v]
+            ds_round = ds_round.drop_vars(v)
+            kbmax = kbmax.drop_vars(v)
 
-    keepbits = {var: int(kb.item()) for var, kb in keepbits.items()}
+    if neg_data:
+        print(f"Skipping variables with negative keepbits: {set(neg_data.keys())}")
+        print(f"Keeping these variables: {set(kbmax.keys())}")
 
-    ds_bitrounded = xb.xr_bitround(ds_round, keepbits)
+    ds_bitrounded = xb.xr_bitround(ds_round, kbmax)
 
+    # Add skipped variables back in
     for v, arr in {**coord_data, **neg_data}.items():
         ds_bitrounded[v] = arr
 
+    # Apply encodings
+    for v in ds_bitrounded.keys():
+        ds_bitrounded[v].encoding = {"zlib": True, "complevel": deflate_level}
+
+    print(f"Writing result to {output_file}")
     ds_bitrounded.to_netcdf(
         path=output_file,
         mode="w",
         format="NETCDF4",
-        engine="netcdf4",
-        encoding={"zlib": True, "compression": deflate_level},
+        engine="netcdf4"
     )
 
     return output_file
