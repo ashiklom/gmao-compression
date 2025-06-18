@@ -61,7 +61,9 @@ def main():
         "compression_level", type=float, help="Rounding level for xbitinfo rounding"
     )
     parser.add_argument("output_path", help="Path to write the compressed file")
-    parser.add_argument("deflate_level", help="DEFLATE compression level", default=2)
+    parser.add_argument(
+        "deflate_level", help="DEFLATE compression level", default=2, type=int
+    )
     args = parser.parse_args()
 
     xbitinfo_round(
