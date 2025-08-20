@@ -28,6 +28,7 @@ netcdf4 = ">=1.6.5,<2"
 xarray = ">=2025.6.1,<2026"
 xbitinfo = ">=0.0.4.dev1,<0.0.5"
 zstandard = ">=0.23.0,<0.24"
+humanize = ">=4.12.3,<5"
 
 [tool.pixi.activation]
 scripts = ["pixi_env.sh"]
