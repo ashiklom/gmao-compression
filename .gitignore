@@ -1,6 +1,7 @@
 _data/
 _compressed/
 _keepbits/
+_figures/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
