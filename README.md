@@ -9,13 +9,19 @@ Note that this is a user-level install (i.e., installs to your home directory); 
 You only need to do this once per system.
 Then, log out and log back in (or `source ~/.bashrc`).
 
-Once pixi is installed, navigate to the project directory and run:
+Once pixi is installed, you can "activate" this environment with:
 
 ```sh
-pixi run pip install .
+pixi shell
 ```
 
-This will first install all project dependencies and then install the package itself.
+...or run specific scripts with `pixi run`:
+
+```sh
+pixi run python scripts/calc_keepbits.py
+```
+
+This will first install all project dependencies before running the actual scripts.
 
 ### Using mamba (only on NCCS Discover)
 
@@ -56,46 +62,20 @@ mamba activate ./compression-env
 export CONDA_JL_CONDA_EXE=$(which conda)
 ```
 
-Install the library itself.
-
-```sh
-# Confirm that you are using pip from the compression environment 
-which pip
-# Now, install
-pip install .
-```
-
-Confirm the installation:
-
-```sh
-compress --help
-```
-
 ## Usage
 
-### Using pixi (recommended)
+(If using mamba, first activate the environment as above; then run these scripts without the `pixi run` prefix).
 
 ```sh
-pixi run compress <input-file> <compression-level> <output-file>
-pixi run compress --help
-pixi run decompress --help
-pixi run verify --help
-```
+# Download test data
+bash scripts/get-test-data.sh
 
-### Using mamba 
+# Calculate keepbits on test data
+pixi run python scripts/calc_keepbits.py
 
-Activate the environment.
+# Compress the files
+pixi run python scripts/compress.py
 
-```sh
-eval "$(mamba shell hook --shell bash)"
-mamba activate ./compression-env
-export CONDA_JL_CONDA_EXE="$(which conda)"
-```
-
-Then use one of the following commands as appropriate:
-
-```sh
-compress --help
-decompress --help
-verify --help
+# Compare the file sizes
+pixi run python scripts/compare-sizes.py
 ```
