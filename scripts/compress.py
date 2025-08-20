@@ -19,13 +19,18 @@ fname = files[2]
 
 
 def compress(fname):
-    kbfile = Path("_keepbits/") / (Path(fname).stem + ".csv")
     outdir = Path("_compressed")
     outdir.mkdir(exist_ok=True)
     outfile = outdir / Path(fname).name
+    # NOTE: In production, we will not have separate keepbits for every file. 
+    # We need to read a representative sample of the keepbits data, get a 
+    # conservative estimate of the keepbits (maximum value for each variable), 
+    # and then apply that uniformly to the files to be compressed.
+    kbfile = Path("_keepbits/") / (Path(fname).stem + ".csv")
     kb = pd.read_csv(kbfile, index_col=0)
     kb_selected = kb.loc[:, "0.99"]
-    # Note: Remove variables with negative or zero keepbits (this is likely a bug)
+    # Keepbits <= 0 are a bug, so just remove those variables; we'll preserve 
+    # their native encoding.
     kb_selected = kb_selected[kb_selected > 0]
     input = xr.open_dataset(fname, engine="netcdf4")
     enc = {

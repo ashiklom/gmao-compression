@@ -27,4 +27,7 @@ def calc_keepbits(fname):
     outfile = outdir / (Path(fname).stem + ".csv")
     kbdat.to_csv(outfile)
 
-[calc_keepbits(fname) for fname in files]
+for fname in files:
+    print(f"Processing {fname}")
+    calc_keepbits(fname)
+    print("-"*10)
