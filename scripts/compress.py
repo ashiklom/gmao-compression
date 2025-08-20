@@ -33,15 +33,17 @@ def compress(fname):
     # their native encoding.
     kb_selected = kb_selected[kb_selected > 0]
     input = xr.open_dataset(fname, engine="netcdf4")
+    # Enable compression for *all* variables
     enc = {
         key: {
             "compression": "zlib",
-            "shuffle": True,
-            "significant_digits": value,
-            "quantize_mode": "BitRound",
+            "shuffle": True
         }
-        for key, value in kb_selected.items()
+        for key in input.data_vars.keys()
     }
+    # ...and then *also* do bitround on the ones with keepbits
+    for key, value in kb_selected.items():
+        enc[key] |= {"significant_digits": value, "quantize_mode": "BitRound"}
     input.to_netcdf(
         outfile,
         engine="netcdf4",
